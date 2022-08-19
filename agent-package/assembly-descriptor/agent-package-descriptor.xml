@@ -1,0 +1,33 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
+
+    <!-- see https://maven.apache.org/plugins/maven-assembly-plugin/assembly.html-->
+    <id>wingli-tools-agent</id>
+    <formats>
+        <format>jar</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <dependencySets>
+        <!--    自解压，已经执行了shade插件之后了，对类进行了shadow、对资源进行了合并，处理了非fatjar的情况    -->
+        <dependencySet>
+            <includes>
+                <include>com.wingli:agent-package</include>
+            </includes>
+            <outputDirectory>/</outputDirectory>
+            <useProjectArtifact>true</useProjectArtifact>
+            <unpack>true</unpack>
+            <scope>runtime</scope>
+        </dependencySet>
+        <!--   将 jar in jar 依赖放入到对应的目录，处理了fatjar的情况    -->
+        <dependencySet>
+            <outputDirectory>/BOOT-INF/lib/</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
+            <unpack>false</unpack>
+            <includes>
+                <include>com.wingli:agent-helper</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>
+</assembly>

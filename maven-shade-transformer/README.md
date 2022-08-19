@@ -1,0 +1,1 @@
+提供给shade插件使用的 transformer，用来合并META-INF/spring.factories中的内容，并且需要支持shade插件配置的relocator

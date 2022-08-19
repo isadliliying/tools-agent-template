@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>tools-agent-template</artifactId>
+        <groupId>com.wingli</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>agent-package</artifactId>
+    <version>1.0.18-SNAPSHOT</version>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.wingli</groupId>
+            <artifactId>agent-helper</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.wingli</groupId>
+            <artifactId>agent-transformer</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.wingli</groupId>
+                        <artifactId>maven-shade-transformer</artifactId>
+                        <version>1.0-SNAPSHOT</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <shadedArtifactAttached>false</shadedArtifactAttached>
+                            <transformers>
+                                <transformer
+                                        implementation="com.wingli.agent.maven.SpringFactoriesMergingTransformer">
+                                    <resource>META-INF/spring.factories</resource>
+                                </transformer>
+                            </transformers>
+                            <relocations>
+                                <relocation>
+                                    <!-- 源包名 -->
+                                    <pattern>com.wingli.agent.helper</pattern>
+                                    <!-- 目的包名 -->
+                                    <shadedPattern>shaded.com.wingli.agent.helper</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <!-- 源包名 -->
+                                    <pattern>org.jsoup</pattern>
+                                    <!-- 目的包名 -->
+                                    <shadedPattern>shaded.org.jsoup</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <!-- 源包名 -->
+                                    <pattern>javassist</pattern>
+                                    <!-- 目的包名 -->
+                                    <shadedPattern>shaded.javassist</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <!-- 源包名 -->
+                                    <pattern>com.alibaba.fastjson</pattern>
+                                    <!-- 目的包名 -->
+                                    <shadedPattern>shaded.com.alibaba.fastjson</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <!-- 源包名 -->
+                                    <pattern>org.slf4j</pattern>
+                                    <!-- 目的包名 -->
+                                    <shadedPattern>shaded.org.slf4j</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <descriptors>
+                        <!--assembly配置文件路径，注意需要在项目中新建文件assembly/agent-package-descriptor.xml-->
+                        <descriptor>assembly-descriptor/agent-package-descriptor.xml</descriptor>
+                    </descriptors>
+                    <recompressZippedFiles>false</recompressZippedFiles>
+                    <archive>
+                        <manifestEntries>
+                            <Premain-Class>com.wingli.agent.transform.Agent</Premain-Class>
+                            <Can-Redefine-Classes>true</Can-Redefine-Classes>
+                            <Can-Retransform-Classes>true</Can-Retransform-Classes>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>attached</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
